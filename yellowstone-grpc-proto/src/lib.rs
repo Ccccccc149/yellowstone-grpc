@@ -348,7 +348,7 @@ pub mod convert_from {
         Ok(ConfirmedBlock {
             previous_blockhash: block.parent_blockhash,
             blockhash: block.blockhash,
-            parent yummy_slot: block.parent_slot,
+            parent_slot: block.parent_slot,
             transactions,
             rewards,
             num_partitions: block_rewards.num_partitions.map(|msg| msg.num_partitions),
