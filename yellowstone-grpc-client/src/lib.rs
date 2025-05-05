@@ -15,6 +15,7 @@ use {
         Request, Response, Status,
     },
     tonic_health::pb::{health_client::HealthClient, HealthCheckRequest, HealthCheckResponse},
+    yellowstone_grpc_proto::geyser::GeyserClient,
     yellowstone_grpc_proto::prelude::{
         CommitmentLevel, GetBlockHeightRequest, GetBlockHeightResponse, GetLatestBlockhashRequest,
         GetLatestBlockhashResponse, GetSlotRequest, GetSlotResponse, GetVersionRequest,
@@ -22,15 +23,6 @@ use {
         PongResponse, SubscribeRequest, SubscribeUpdate,
     },
 };
-
-pub mod geyser_client {
-    pub use super::{
-        CommitmentLevel, GetBlockHeightRequest, GetBlockHeightResponse, GetLatestBlockhashRequest,
-        GetLatestBlockhashResponse, GetSlotRequest, GetSlotResponse, GetVersionRequest,
-        GetVersionResponse, IsBlockhashValidRequest, IsBlockhashValidResponse, PingRequest,
-        PongResponse, SubscribeRequest, SubscribeUpdate, GeyserGrpcClient,
-    };
-}
 
 #[derive(Debug, Clone)]
 pub struct InterceptorXToken {
@@ -64,7 +56,7 @@ pub type GeyserGrpcClientResult<T> = Result<T, GeyserGrpcClientError>;
 
 pub struct GeyserGrpcClient<F> {
     pub health: HealthClient<InterceptedService<Channel, F>>,
-    pub geyser: yellowstone_grpc_proto::prelude::geyser_client::GeyserClient<InterceptedService<Channel, F>>,
+    pub geyser: GeyserClient<InterceptedService<Channel, F>>,
 }
 
 impl GeyserGrpcClient<()> {
@@ -82,7 +74,7 @@ impl GeyserGrpcClient<()> {
 impl<F: Interceptor> GeyserGrpcClient<F> {
     pub const fn new(
         health: HealthClient<InterceptedService<Channel, F>>,
-        geyser: yellowstone_grpc_proto::prelude::geyser_client::GeyserClient<InterceptedService<Channel, F>>,
+        geyser: GeyserClient<InterceptedService<Channel, F>>,
     ) -> Self {
         Self { health, geyser }
     }
@@ -258,7 +250,7 @@ impl GeyserGrpcBuilder {
             x_request_snapshot: self.x_request_snapshot,
         };
 
-        let mut geyser = yellowstone_grpc_proto::prelude::geyser_client::GeyserClient::with_interceptor(channel.clone(), interceptor.clone());
+        let mut geyser = GeyserClient::with_interceptor(channel.clone(), interceptor.clone());
         if let Some(encoding) = self.send_compressed {
             geyser = geyser.send_compressed(encoding);
         }
