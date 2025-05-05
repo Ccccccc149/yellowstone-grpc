@@ -31,6 +31,15 @@ pub mod solana {
 
 pub mod prelude {
     pub use super::{geyser::*, solana::storage::confirmed_block::*};
+
+    pub mod geyser_client {
+        pub use super::super::geyser::{
+            CommitmentLevel, GetBlockHeightRequest, GetBlockHeightResponse, GetLatestBlockhashRequest,
+            GetLatestBlockhashResponse, GetSlotRequest, GetSlotResponse, GetVersionRequest,
+            GetVersionResponse, IsBlockhashValidRequest, IsBlockhashValidResponse, PingRequest,
+            PongResponse, SubscribeRequest, SubscribeUpdate, GeyserClient,
+        };
+    }
 }
 
 #[cfg(feature = "tonic")]
