@@ -7,7 +7,7 @@ fn main() -> anyhow::Result<()> {
     std::env::set_var("PROTOC", protobuf_src::protoc());
 
     // build protos
-    tonic_build::configure().compile_protos(&["proto/geyser.proto"], &["proto"])?;
+    tonic_build::configure().compile(&["proto/geyser.proto"], &["proto"])?;
 
     // build protos without tonic (wasm)
     let out_dir = env::var("OUT_DIR").expect("OUT_DIR not found");
@@ -17,7 +17,7 @@ fn main() -> anyhow::Result<()> {
         .build_client(false)
         .build_server(false)
         .out_dir(out_dir_path)
-        .compile_protos(&["proto/geyser.proto"], &["proto"])?;
+        .compile(&["proto/geyser.proto"], &["proto"])?;
 
     // build with accepting our custom struct
     let geyser_service = Service::builder()
@@ -94,16 +94,6 @@ fn main() -> anyhow::Result<()> {
     Builder::new()
         .build_client(false)
         .compile(&[geyser_service]);
-
-    // patching generated custom struct (if custom Codec is used)
-    // let mut location = std::path::PathBuf::from(std::env::var("OUT_DIR")?);
-    // location.push("geyser.Geyser.rs");
-    // let geyser_rs = std::fs::read_to_string(location.clone())?;
-    // let geyser_rs = geyser_rs.replace(
-    //     "let codec = crate::plugin::codec::SubscribeCodec::default();",
-    //     "let codec = crate::plugin::codec::SubscribeCodec::<crate::plugin::filter::Message, _>::default();",
-    // );
-    // std::fs::write(location, geyser_rs)?;
 
     Ok(())
 }
